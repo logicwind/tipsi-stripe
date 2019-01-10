@@ -68,4 +68,63 @@
         android:padding="@dimen/activity_horizontal_margin"
         android:visibility="gone" />
 
+    <ScrollView
+        android:id="@+id/addressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:maxLines="1"
+                android:inputType="text" />
+            <EditText
+                android:id="@+id/addressLine1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Address"
+                android:maxLines="1"
+                android:inputType="text"/>
+            <EditText
+                android:id="@+id/addressLine2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Apt."
+                android:maxLines="1"
+                android:inputType="text"/>
+            <EditText
+                android:id="@+id/addressZip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="ZIP Code"
+                android:maxLines="1"
+                android:inputType="text"/>
+            <EditText
+                android:id="@+id/addressCity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="City"
+                android:maxLines="1"
+                android:inputType="text"/>
+            <EditText
+                android:id="@+id/addressState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="State"
+                android:maxLines="1"
+                android:inputType="text"/>
+            <EditText
+                android:id="@+id/addressCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Country"
+                android:imeOptions="actionDone"/>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
