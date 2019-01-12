@@ -1,78 +1,78 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent">-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingLeft="8dp"
+    android:paddingTop="@dimen/activity_horizontal_margin"
+    android:paddingRight="8dp"
+    android:paddingBottom="@dimen/activity_horizontal_margin">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingLeft="8dp"
-        android:paddingTop="@dimen/activity_horizontal_margin"
-        android:paddingRight="8dp"
-        android:paddingBottom="@dimen/activity_horizontal_margin">
+        android:padding="@dimen/activity_horizontal_margin">
 
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/activity_horizontal_margin">
-
-            <ImageView
-                android:id="@+id/imageFlippedCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:maxWidth="200dp"
-                android:maxHeight="200dp"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:src="@drawable/stp_card_form_front" />
-
-
-            <ImageView
-                android:id="@+id/imageFlippedCardBack"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:alpha="0"
-                android:maxWidth="200dp"
-                android:maxHeight="200dp"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:src="@drawable/stp_card_form_back" />
-
-        </FrameLayout>
-
-        <TextView
+        <ImageView
+            android:id="@+id/imageFlippedCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:text="@string/gettipsi_card_number_label"
-            android:textColor="@color/colorPrimary" />
-
-        <com.devmarvel.creditcardentry.library.CreditCardForm
-            android:id="@+id/credit_card_form"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white_background"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingTop="8dp"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            app:cursor_color="@color/colorAccent"
-            app:include_helper="true"
-            app:include_zip="false"
-            app:text_size="18sp" />
-
-        <ProgressBar
-            android:id="@+id/buttonProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:maxWidth="200dp"
+            android:maxHeight="200dp"
             android:padding="@dimen/activity_horizontal_margin"
-            android:visibility="gone" />
+            android:src="@drawable/stp_card_form_front" />
+
+
+        <ImageView
+            android:id="@+id/imageFlippedCardBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:alpha="0"
+            android:maxWidth="200dp"
+            android:maxHeight="200dp"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:src="@drawable/stp_card_form_back" />
+
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:text="@string/gettipsi_card_number_label"
+        android:textColor="@color/colorPrimary" />
+
+    <com.devmarvel.creditcardentry.library.CreditCardForm
+        android:id="@+id/credit_card_form"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white_background"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingTop="8dp"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        app:cursor_color="@color/colorAccent"
+        app:include_helper="true"
+        app:include_zip="false"
+        app:text_size="18sp" />
+
+    <ProgressBar
+        android:id="@+id/buttonProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/addressView"
@@ -137,13 +137,13 @@
                 android:inputType="text"
                 android:maxLines="1" />
 
-                <Spinner
-                    android:id="@+id/countrySpinner"
-                    style="@style/SpinnerItem"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:backgroundTint="@color/grey"
-                    android:popupBackground="@color/grey" />
+            <Spinner
+                android:id="@+id/countrySpinner"
+                style="@style/SpinnerItem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/grey"
+                android:popupBackground="@color/grey" />
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout><!--</ScrollView>-->

@@ -196,12 +196,13 @@ public class StripeModule extends ReactContextBaseJavaModule {
                 ? options.getMap("prefilledInformation").getMap("billingAddress").hasKey("name")
                 ? options.getMap("prefilledInformation").getMap("billingAddress").getString("name")
                 : "" : "" : "";
+        ReadableMap theme = options.hasKey("theme") ? options.getMap("theme") : null;
         Activity currentActivity = getCurrentActivity();
         try {
             ArgCheck.nonNull(currentActivity);
             ArgCheck.notEmptyString(mPublicKey);
 
-            final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(mPublicKey, showAddress, name);
+            final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(mPublicKey, showAddress, name, theme);
             cardDialog.setPromise(promise);
             cardDialog.show(currentActivity.getFragmentManager(), "AddNewCard");
         } catch (Exception e) {
