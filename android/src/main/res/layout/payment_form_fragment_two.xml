@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent">-->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -6,8 +7,8 @@
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:paddingLeft="8dp"
-    android:paddingRight="8dp"
     android:paddingTop="@dimen/activity_horizontal_margin"
+    android:paddingRight="8dp"
     android:paddingBottom="@dimen/activity_horizontal_margin">
 
     <FrameLayout
@@ -20,10 +21,10 @@
             android:id="@+id/imageFlippedCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/activity_horizontal_margin"
             android:adjustViewBounds="true"
-            android:maxHeight="200dp"
             android:maxWidth="200dp"
+            android:maxHeight="200dp"
+            android:padding="@dimen/activity_horizontal_margin"
             android:src="@drawable/stp_card_form_front" />
 
 
@@ -31,11 +32,11 @@
             android:id="@+id/imageFlippedCardBack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/activity_horizontal_margin"
             android:adjustViewBounds="true"
             android:alpha="0"
-            android:maxHeight="200dp"
             android:maxWidth="200dp"
+            android:maxHeight="200dp"
+            android:padding="@dimen/activity_horizontal_margin"
             android:src="@drawable/stp_card_form_back" />
 
     </FrameLayout>
@@ -43,22 +44,23 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/gettipsi_card_number_label"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"/>
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:text="@string/gettipsi_card_number_label"
+        android:textColor="@color/colorPrimary" />
 
     <com.devmarvel.creditcardentry.library.CreditCardForm
         android:id="@+id/credit_card_form"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white_background"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="8dp"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        app:cursor_color="@color/colorAccent"
         app:include_helper="true"
         app:include_zip="false"
-        app:input_background="@color/transparent_background"
-        app:cursor_color="@color/colorAccent"
-        app:text_size="18sp"/>
+        app:text_size="18sp" />
 
     <ProgressBar
         android:id="@+id/buttonProgress"
@@ -68,4 +70,79 @@
         android:padding="@dimen/activity_horizontal_margin"
         android:visibility="gone" />
 
-</LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/addressView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:visibility="visible">
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white_background"
+                android:hint="Name"
+                android:inputType="text"
+                android:maxLines="1" />
+
+            <EditText
+                android:id="@+id/addressLine1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white_background"
+                android:hint="Address"
+                android:inputType="text"
+                android:maxLines="1" />
+
+            <EditText
+                android:id="@+id/addressLine2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white_background"
+                android:hint="Apt."
+                android:inputType="text"
+                android:maxLines="1" />
+
+            <EditText
+                android:id="@+id/addressZip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white_background"
+                android:hint="ZIP Code"
+                android:inputType="text"
+                android:maxLines="1" />
+
+            <EditText
+                android:id="@+id/addressCity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white_background"
+                android:hint="City"
+                android:inputType="text"
+                android:maxLines="1" />
+
+            <EditText
+                android:id="@+id/addressState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white_background"
+                android:hint="State"
+                android:inputType="text"
+                android:maxLines="1" />
+
+            <Spinner
+                android:id="@+id/countrySpinner"
+                style="@style/SpinnerItem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+               />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout><!--</ScrollView>-->
