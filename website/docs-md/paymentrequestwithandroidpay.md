@@ -4,6 +4,8 @@ title: .paymentRequestWithAndroidPay(options) -> Promise
 sidebar_label: .paymentRequestWithAndroidPay()
 ---
 
+__Method is deprecated, use paymentRequestWithNativePay() instead__
+
 **options** — An object with the following keys:
 
 | Key | Type | Description |
@@ -12,6 +14,7 @@ sidebar_label: .paymentRequestWithAndroidPay()
 | currency_code | String | Three-letter ISO currency code representing the currency paid out to the bank account |
 | shipping_address_required&nbsp;(Optional) | Bool | Is shipping address menu required? Default is **false** |
 | billing_address_required&nbsp;(Optional) | Bool | Is billing address menu required? Default is **false** |
+| phone_number_required&nbsp;(Optional) | Bool | Is phone number required? Default is **false** |
 | line_items | Array | Array of purchased items. Each item contains **line_item** |
 
 **line_item** — An object with the following keys:

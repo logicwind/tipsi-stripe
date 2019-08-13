@@ -40,338 +40,329 @@ import static com.gettipsi.stripe.util.InitializationOptions.ANDROID_PAY_MODE_TE
 
 public class StripeModule extends ReactContextBaseJavaModule {
 
-    private static final String MODULE_NAME = StripeModule.class.getSimpleName();
-    private static final String TAG = "### " + MODULE_NAME + ": ";
+  private static final String MODULE_NAME = StripeModule.class.getSimpleName();
+  private static final String TAG = "### " + MODULE_NAME + ": ";
 
-    private static StripeModule sInstance = null;
+  private static StripeModule sInstance = null;
 
-    public static StripeModule getInstance() {
-        return sInstance;
-    }
+  public static StripeModule getInstance() {
+    return sInstance;
+  }
 
-    public Stripe getStripe() {
-        return mStripe;
-    }
+  public Stripe getStripe() {
+    return mStripe;
+  }
 
-    @Nullable
-    private Promise mCreateSourcePromise;
+  @Nullable
+  private Promise mCreateSourcePromise;
 
-    @Nullable
-    private Source mCreatedSource;
+  @Nullable
+  private Source mCreatedSource;
 
-    private String mPublicKey;
-    private Stripe mStripe;
-    private PayFlow mPayFlow;
-
-
-    private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
-
-        @Override
-        public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-            boolean handled = getPayFlow().onActivityResult(activity, requestCode, resultCode, data);
-            if (!handled) {
-                super.onActivityResult(activity, requestCode, resultCode, data);
-            }
-        }
-    };
+  private String mPublicKey;
+  private Stripe mStripe;
+  private PayFlow mPayFlow;
 
 
-    public StripeModule(ReactApplicationContext reactContext) {
-        super(reactContext);
-
-        // Add the listener for `onActivityResult`
-        reactContext.addActivityEventListener(mActivityEventListener);
-
-        sInstance = this;
-    }
+  private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
 
     @Override
-    public String getName() {
-        return MODULE_NAME;
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+      boolean handled = getPayFlow().onActivityResult(activity, requestCode, resultCode, data);
+      if (!handled) {
+        super.onActivityResult(activity, requestCode, resultCode, data);
+      }
+    }
+  };
+
+
+  public StripeModule(ReactApplicationContext reactContext) {
+    super(reactContext);
+
+    // Add the listener for `onActivityResult`
+    reactContext.addActivityEventListener(mActivityEventListener);
+
+    sInstance = this;
+  }
+
+  @Override
+  public String getName() {
+    return MODULE_NAME;
+  }
+
+  @ReactMethod
+  public void init(@NonNull ReadableMap options) {
+    ArgCheck.nonNull(options);
+
+    String newPubKey = Converters.getStringOrNull(options, PUBLISHABLE_KEY);
+    String newAndroidPayMode = Converters.getStringOrNull(options, ANDROID_PAY_MODE_KEY);
+
+    if (newPubKey != null && !TextUtils.equals(newPubKey, mPublicKey)) {
+      ArgCheck.notEmptyString(newPubKey);
+
+      mPublicKey = newPubKey;
+      mStripe = new Stripe(getReactApplicationContext(), mPublicKey);
+      getPayFlow().setPublishableKey(mPublicKey);
     }
 
-    @ReactMethod
-    public void init(@NonNull ReadableMap options) {
-        ArgCheck.nonNull(options);
+    if (newAndroidPayMode != null) {
+      ArgCheck.isTrue(ANDROID_PAY_MODE_TEST.equals(newAndroidPayMode) || ANDROID_PAY_MODE_PRODUCTION.equals(newAndroidPayMode));
 
-        String newPubKey = Converters.getStringOrNull(options, PUBLISHABLE_KEY);
-        String newAndroidPayMode = Converters.getStringOrNull(options, ANDROID_PAY_MODE_KEY);
+      getPayFlow().setEnvironment(androidPayModeToEnvironment(newAndroidPayMode));
+    }
+  }
 
-        if (newPubKey != null && !TextUtils.equals(newPubKey, mPublicKey)) {
-            ArgCheck.notEmptyString(newPubKey);
-
-            mPublicKey = newPubKey;
-            mStripe = new Stripe(getReactApplicationContext(), mPublicKey);
-            getPayFlow().setPublishableKey(mPublicKey);
-        }
-
-        if (newAndroidPayMode != null) {
-            ArgCheck.isTrue(ANDROID_PAY_MODE_TEST.equals(newAndroidPayMode) || ANDROID_PAY_MODE_PRODUCTION.equals(newAndroidPayMode));
-
-            getPayFlow().setEnvironment(androidPayModeToEnvironment(newAndroidPayMode));
-        }
+  private PayFlow getPayFlow() {
+    if (mPayFlow == null) {
+      mPayFlow = PayFlow.create(
+        new Fun0<Activity>() { public Activity call() {
+          return getCurrentActivity();
+        }}
+      );
     }
 
-    private PayFlow getPayFlow() {
-        if (mPayFlow == null) {
-            mPayFlow = PayFlow.create(
-                    new Fun0<Activity>() {
-                        public Activity call() {
-                            return getCurrentActivity();
-                        }
-                    }
-            );
-        }
+    return mPayFlow;
+  }
 
-        return mPayFlow;
-    }
+  private static int androidPayModeToEnvironment(@NonNull String androidPayMode) {
+    ArgCheck.notEmptyString(androidPayMode);
+    return ANDROID_PAY_MODE_TEST.equals(androidPayMode.toLowerCase()) ? WalletConstants.ENVIRONMENT_TEST : WalletConstants.ENVIRONMENT_PRODUCTION;
+  }
 
-    private static int androidPayModeToEnvironment(@NonNull String androidPayMode) {
-        ArgCheck.notEmptyString(androidPayMode);
-        return ANDROID_PAY_MODE_TEST.equals(androidPayMode.toLowerCase()) ? WalletConstants.ENVIRONMENT_TEST : WalletConstants.ENVIRONMENT_PRODUCTION;
-    }
+  @ReactMethod
+  public void deviceSupportsAndroidPay(final Promise promise) {
+    getPayFlow().deviceSupportsAndroidPay(false, promise);
+  }
 
-    @ReactMethod
-    public void deviceSupportsAndroidPay(final Promise promise) {
-        getPayFlow().deviceSupportsAndroidPay(false, promise);
-    }
+  @ReactMethod
+  public void canMakeAndroidPayPayments(final Promise promise) {
+    getPayFlow().deviceSupportsAndroidPay(true, promise);
+  }
 
-    @ReactMethod
-    public void canMakeAndroidPayPayments(final Promise promise) {
-        getPayFlow().deviceSupportsAndroidPay(true, promise);
-    }
+  @ReactMethod
+  public void createTokenWithCard(final ReadableMap cardData, final Promise promise) {
+    try {
+      ArgCheck.nonNull(mStripe);
+      ArgCheck.notEmptyString(mPublicKey);
 
-    @ReactMethod
-    public void createTokenWithCard(final ReadableMap cardData, final Promise promise) {
-        try {
-            ArgCheck.nonNull(mStripe);
-            ArgCheck.notEmptyString(mPublicKey);
-
-            mStripe.createToken(
-                    createCard(cardData),
-                    mPublicKey,
-                    new TokenCallback() {
-                        public void onSuccess(Token token) {
-                            promise.resolve(convertTokenToWritableMap(token));
-                        }
-                        public void onError(Exception error) {
-                            error.printStackTrace();
-                            promise.reject(TAG, error.getMessage());
-                        }
-                    });
-        } catch (Exception e) {
-            promise.reject(TAG, e.getMessage());
-        }
-    }
-
-    @ReactMethod
-    public void createTokenWithBankAccount(final ReadableMap accountData, final Promise promise) {
-        try {
-            ArgCheck.nonNull(mStripe);
-            ArgCheck.notEmptyString(mPublicKey);
-
-            mStripe.createBankAccountToken(
-                    createBankAccount(accountData),
-                    mPublicKey,
-                    null,
-                    new TokenCallback() {
-                        public void onSuccess(Token token) {
-                            promise.resolve(convertTokenToWritableMap(token));
-                        }
-                        public void onError(Exception error) {
-                            error.printStackTrace();
-                            promise.reject(TAG, error.getMessage());
-                        }
-                    });
-        } catch (Exception e) {
-            promise.reject(TAG, e.getMessage());
-        }
-    }
-
-    @ReactMethod
-    public void paymentRequestWithCardForm(ReadableMap options, final Promise promise) {
-        String showAddress = options.hasKey("requiredBillingAddressFields") ? options.getString("requiredBillingAddressFields") : null;
-        String name = options.hasKey("prefilledInformation")
-                ? options.getMap("prefilledInformation").hasKey("billingAddress")
-                ? options.getMap("prefilledInformation").getMap("billingAddress").hasKey("name")
-                ? options.getMap("prefilledInformation").getMap("billingAddress").getString("name")
-                : "" : "" : "";
-        ReadableMap theme = options.hasKey("theme") ? options.getMap("theme") : null;
-        Activity currentActivity = getCurrentActivity();
-        try {
-            ArgCheck.nonNull(currentActivity);
-            ArgCheck.notEmptyString(mPublicKey);
-
-            final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(mPublicKey, showAddress, name, theme);
-            cardDialog.setPromise(promise);
-            cardDialog.show(currentActivity.getFragmentManager(), "AddNewCard");
-        } catch (Exception e) {
-            promise.reject(TAG, e.getMessage());
-        }
-    }
-
-    @ReactMethod
-    public void paymentRequestWithAndroidPay(final ReadableMap payParams, final Promise promise) {
-        getPayFlow().paymentRequestWithAndroidPay(payParams, promise);
-    }
-
-    @ReactMethod
-    public void createSourceWithParams(final ReadableMap options, final Promise promise) {
-        String sourceType = options.getString("type");
-        SourceParams sourceParams = null;
-        switch (sourceType) {
-            case "alipay":
-                sourceParams = SourceParams.createAlipaySingleUseParams(
-                        options.getInt("amount"),
-                        options.getString("currency"),
-                        getStringOrNull(options, "name"),
-                        getStringOrNull(options, "email"),
-                        options.getString("returnURL"));
-                break;
-            case "bancontact":
-                sourceParams = SourceParams.createBancontactParams(
-                        options.getInt("amount"),
-                        options.getString("name"),
-                        options.getString("returnURL"),
-                        getStringOrNull(options, "statementDescriptor"));
-                break;
-            case "bitcoin":
-                sourceParams = SourceParams.createBitcoinParams(
-                        options.getInt("amount"), options.getString("currency"), options.getString("email"));
-                break;
-            case "giropay":
-                sourceParams = SourceParams.createGiropayParams(
-                        options.getInt("amount"),
-                        options.getString("name"),
-                        options.getString("returnURL"),
-                        getStringOrNull(options, "statementDescriptor"));
-                break;
-            case "ideal":
-                sourceParams = SourceParams.createIdealParams(
-                        options.getInt("amount"),
-                        options.getString("name"),
-                        options.getString("returnURL"),
-                        getStringOrNull(options, "statementDescriptor"),
-                        getStringOrNull(options, "bank"));
-                break;
-            case "sepaDebit":
-                sourceParams = SourceParams.createSepaDebitParams(
-                        options.getString("name"),
-                        options.getString("iban"),
-                        getStringOrNull(options, "addressLine1"),
-                        options.getString("city"),
-                        options.getString("postalCode"),
-                        options.getString("country"));
-                break;
-            case "sofort":
-                sourceParams = SourceParams.createSofortParams(
-                        options.getInt("amount"),
-                        options.getString("returnURL"),
-                        options.getString("country"),
-                        getStringOrNull(options, "statementDescriptor"));
-                break;
-            case "threeDSecure":
-                sourceParams = SourceParams.createThreeDSecureParams(
-                        options.getInt("amount"),
-                        options.getString("currency"),
-                        options.getString("returnURL"),
-                        options.getString("card"));
-                break;
-        }
-
-        ArgCheck.nonNull(sourceParams);
-
-        mStripe.createSource(sourceParams, new SourceCallback() {
-            @Override
-            public void onError(Exception error) {
-                promise.reject(error);
-            }
-
-            @Override
-            public void onSuccess(Source source) {
-                if (Source.REDIRECT.equals(source.getFlow())) {
-                    Activity currentActivity = getCurrentActivity();
-                    if (currentActivity == null) {
-                        promise.reject(TAG, NO_CURRENT_ACTIVITY_MSG);
-                    } else {
-                        mCreateSourcePromise = promise;
-                        mCreatedSource = source;
-                        String redirectUrl = source.getRedirect().getUrl();
-                        Intent browserIntent = new Intent(currentActivity, OpenBrowserActivity.class)
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                                .putExtra(OpenBrowserActivity.EXTRA_URL, redirectUrl);
-                        currentActivity.startActivity(browserIntent);
-                    }
-                } else {
-                    promise.resolve(convertSourceToWritableMap(source));
-                }
-            }
+      mStripe.createToken(
+        createCard(cardData),
+        mPublicKey,
+        new TokenCallback() {
+          public void onSuccess(Token token) {
+            promise.resolve(convertTokenToWritableMap(token));
+          }
+          public void onError(Exception error) {
+            error.printStackTrace();
+            promise.reject(TAG, error.getMessage());
+          }
         });
+    } catch (Exception e) {
+      promise.reject(TAG, e.getMessage());
+    }
+  }
+
+  @ReactMethod
+  public void createTokenWithBankAccount(final ReadableMap accountData, final Promise promise) {
+    try {
+      ArgCheck.nonNull(mStripe);
+      ArgCheck.notEmptyString(mPublicKey);
+
+      mStripe.createBankAccountToken(
+        createBankAccount(accountData),
+        mPublicKey,
+        null,
+        new TokenCallback() {
+          public void onSuccess(Token token) {
+            promise.resolve(convertTokenToWritableMap(token));
+          }
+          public void onError(Exception error) {
+            error.printStackTrace();
+            promise.reject(TAG, error.getMessage());
+          }
+        });
+    } catch (Exception e) {
+      promise.reject(TAG, e.getMessage());
+    }
+  }
+
+  @ReactMethod
+  public void paymentRequestWithCardForm(ReadableMap unused, final Promise promise) {
+    Activity currentActivity = getCurrentActivity();
+    try {
+      ArgCheck.nonNull(currentActivity);
+      ArgCheck.notEmptyString(mPublicKey);
+
+      final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(mPublicKey);
+      cardDialog.setPromise(promise);
+      cardDialog.show(currentActivity.getFragmentManager(), "AddNewCard");
+    } catch (Exception e) {
+      promise.reject(TAG, e.getMessage());
+    }
+  }
+
+  @ReactMethod
+  public void paymentRequestWithAndroidPay(final ReadableMap payParams, final Promise promise) {
+    getPayFlow().paymentRequestWithAndroidPay(payParams, promise);
+  }
+
+  @ReactMethod
+  public void createSourceWithParams(final ReadableMap options, final Promise promise) {
+    String sourceType = options.getString("type");
+    SourceParams sourceParams = null;
+    switch (sourceType) {
+      case "alipay":
+        sourceParams = SourceParams.createAlipaySingleUseParams(
+            options.getInt("amount"),
+            options.getString("currency"),
+            getStringOrNull(options, "name"),
+            getStringOrNull(options, "email"),
+            options.getString("returnURL"));
+        break;
+      case "bancontact":
+        sourceParams = SourceParams.createBancontactParams(
+            options.getInt("amount"),
+            options.getString("name"),
+            options.getString("returnURL"),
+            getStringOrNull(options, "statementDescriptor"));
+        break;
+      case "bitcoin":
+        sourceParams = SourceParams.createBitcoinParams(
+            options.getInt("amount"), options.getString("currency"), options.getString("email"));
+        break;
+      case "giropay":
+        sourceParams = SourceParams.createGiropayParams(
+            options.getInt("amount"),
+            options.getString("name"),
+            options.getString("returnURL"),
+            getStringOrNull(options, "statementDescriptor"));
+        break;
+      case "ideal":
+        sourceParams = SourceParams.createIdealParams(
+            options.getInt("amount"),
+            options.getString("name"),
+            options.getString("returnURL"),
+            getStringOrNull(options, "statementDescriptor"),
+            getStringOrNull(options, "bank"));
+        break;
+      case "sepaDebit":
+        sourceParams = SourceParams.createSepaDebitParams(
+            options.getString("name"),
+            options.getString("iban"),
+            getStringOrNull(options, "addressLine1"),
+            options.getString("city"),
+            options.getString("postalCode"),
+            options.getString("country"));
+        break;
+      case "sofort":
+        sourceParams = SourceParams.createSofortParams(
+            options.getInt("amount"),
+            options.getString("returnURL"),
+            options.getString("country"),
+            getStringOrNull(options, "statementDescriptor"));
+        break;
+      case "threeDSecure":
+        sourceParams = SourceParams.createThreeDSecureParams(
+            options.getInt("amount"),
+            options.getString("currency"),
+            options.getString("returnURL"),
+            options.getString("card"));
+        break;
     }
 
-    void processRedirect(@Nullable Uri redirectData) {
-        if (mCreatedSource == null || mCreateSourcePromise == null) {
+    ArgCheck.nonNull(sourceParams);
 
-            return;
+    mStripe.createSource(sourceParams, new SourceCallback() {
+      @Override
+      public void onError(Exception error) {
+        promise.reject(error);
+      }
+
+      @Override
+      public void onSuccess(Source source) {
+        if (Source.REDIRECT.equals(source.getFlow())) {
+          Activity currentActivity = getCurrentActivity();
+          if (currentActivity == null) {
+            promise.reject(TAG, NO_CURRENT_ACTIVITY_MSG);
+          } else {
+            mCreateSourcePromise = promise;
+            mCreatedSource = source;
+            String redirectUrl = source.getRedirect().getUrl();
+            Intent browserIntent = new Intent(currentActivity, OpenBrowserActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .putExtra(OpenBrowserActivity.EXTRA_URL, redirectUrl);
+            currentActivity.startActivity(browserIntent);
+          }
+        } else {
+          promise.resolve(convertSourceToWritableMap(source));
         }
+      }
+    });
+  }
 
-        if (redirectData == null) {
+  void processRedirect(@Nullable Uri redirectData) {
+    if (mCreatedSource == null || mCreateSourcePromise == null) {
 
-            mCreateSourcePromise.reject(TAG, "Cancelled");
-            mCreatedSource = null;
-            mCreateSourcePromise = null;
-            return;
-        }
-
-        final String clientSecret = redirectData.getQueryParameter("client_secret");
-        if (!mCreatedSource.getClientSecret().equals(clientSecret)) {
-            mCreateSourcePromise.reject(TAG, "Received redirect uri but there is no source to process");
-            mCreatedSource = null;
-            mCreateSourcePromise = null;
-            return;
-        }
-
-        final String sourceId = redirectData.getQueryParameter("source");
-        if (!mCreatedSource.getId().equals(sourceId)) {
-            mCreateSourcePromise.reject(TAG, "Received wrong source id in redirect uri");
-            mCreatedSource = null;
-            mCreateSourcePromise = null;
-            return;
-        }
-
-        final Promise promise = mCreateSourcePromise;
-
-        // Nulls those properties to avoid processing them twice
-        mCreatedSource = null;
-        mCreateSourcePromise = null;
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                Source source = null;
-                try {
-                    source = mStripe.retrieveSourceSynchronous(sourceId, clientSecret);
-                } catch (Exception e) {
-
-                    return null;
-                }
-
-                switch (source.getStatus()) {
-                    case Source.CHARGEABLE:
-                    case Source.CONSUMED:
-                        promise.resolve(convertSourceToWritableMap(source));
-                        break;
-                    case Source.CANCELED:
-                        promise.reject(TAG, "User cancelled source redirect");
-                        break;
-                    case Source.PENDING:
-                    case Source.FAILED:
-                    case Source.UNKNOWN:
-                        promise.reject(TAG, "Source redirect failed");
-                }
-                return null;
-            }
-        }.execute();
+      return;
     }
+
+    if (redirectData == null) {
+
+      mCreateSourcePromise.reject(TAG, "Cancelled");
+      mCreatedSource = null;
+      mCreateSourcePromise = null;
+      return;
+    }
+
+    final String clientSecret = redirectData.getQueryParameter("client_secret");
+    if (!mCreatedSource.getClientSecret().equals(clientSecret)) {
+      mCreateSourcePromise.reject(TAG, "Received redirect uri but there is no source to process");
+      mCreatedSource = null;
+      mCreateSourcePromise = null;
+      return;
+    }
+
+    final String sourceId = redirectData.getQueryParameter("source");
+    if (!mCreatedSource.getId().equals(sourceId)) {
+      mCreateSourcePromise.reject(TAG, "Received wrong source id in redirect uri");
+      mCreatedSource = null;
+      mCreateSourcePromise = null;
+      return;
+    }
+
+    final Promise promise = mCreateSourcePromise;
+
+    // Nulls those properties to avoid processing them twice
+    mCreatedSource = null;
+    mCreateSourcePromise = null;
+
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... voids) {
+        Source source = null;
+        try {
+          source = mStripe.retrieveSourceSynchronous(sourceId, clientSecret);
+        } catch (Exception e) {
+
+          return null;
+        }
+
+        switch (source.getStatus()) {
+          case Source.CHARGEABLE:
+          case Source.CONSUMED:
+            promise.resolve(convertSourceToWritableMap(source));
+            break;
+          case Source.CANCELED:
+            promise.reject(TAG, "User cancelled source redirect");
+            break;
+          case Source.PENDING:
+          case Source.FAILED:
+          case Source.UNKNOWN:
+            promise.reject(TAG, "Source redirect failed");
+        }
+        return null;
+      }
+    }.execute();
+  }
 
 }
