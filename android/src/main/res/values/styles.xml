@@ -9,7 +9,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:background">@color/colorBackground</item>
+<!--        <item name="android:background">@color/colorBackground</item>-->
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textColorSecondary">@color/white_background</item>
         <item name="editTextColor">@color/white_background</item>

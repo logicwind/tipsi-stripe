@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
+    android:id="@+id/ll_root"
     android:orientation="vertical"
     android:paddingLeft="8dp"
     android:paddingTop="@dimen/activity_horizontal_margin"
@@ -42,6 +43,7 @@
     </FrameLayout>
 
     <TextView
+        android:id="@+id/tv_label_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -87,7 +89,8 @@
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/white_background"
+                android:paddingBottom="15dp"
+                android:backgroundTint="@color/editText"
                 android:hint="Name"
                 android:inputType="text"
                 android:maxLines="1" />
@@ -95,35 +98,39 @@
             <EditText
                 android:id="@+id/addressLine1"
                 android:layout_width="match_parent"
+                android:paddingBottom="15dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/white_background"
+                android:backgroundTint="@color/editText"
                 android:hint="Address"
                 android:inputType="text"
                 android:maxLines="1" />
 
             <EditText
                 android:id="@+id/addressLine2"
+                android:paddingBottom="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/white_background"
+                android:backgroundTint="@color/editText"
                 android:hint="Apt."
                 android:inputType="text"
                 android:maxLines="1" />
 
             <EditText
                 android:id="@+id/addressZip"
+                android:paddingBottom="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/white_background"
+                android:backgroundTint="@color/editText"
                 android:hint="ZIP Code"
                 android:inputType="text"
                 android:maxLines="1" />
 
             <EditText
                 android:id="@+id/addressCity"
+                android:paddingBottom="15dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/white_background"
+                android:backgroundTint="@color/editText"
                 android:hint="City"
                 android:inputType="text"
                 android:maxLines="1" />
@@ -131,8 +138,9 @@
             <EditText
                 android:id="@+id/addressState"
                 android:layout_width="match_parent"
+                android:paddingBottom="15dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/white_background"
+                android:backgroundTint="@color/editText"
                 android:hint="State"
                 android:inputType="text"
                 android:maxLines="1" />
@@ -142,7 +150,7 @@
                 style="@style/SpinnerItem"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-               />
+                />
         </LinearLayout>
     </ScrollView>
 </LinearLayout><!--</ScrollView>-->

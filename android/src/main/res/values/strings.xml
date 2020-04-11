@@ -5,7 +5,7 @@
   <string name="gettipsi_card_cvc">CVC</string>
   <string name="gettipsi_google_pay_unavaliable">Google Pay is unavailable on your device.</string>
   <string name="gettipsi_user_cancel_dialog">A user has canceled the dialog. No card added!</string>
-  <string name="gettipsi_card_enter_dialog_title">Enter your card</string>
+  <string name="gettipsi_card_enter_dialog_title">Add a card</string>
   <string name="gettipsi_card_enter_dialog_positive_button">Done</string>
   <string name="gettipsi_card_enter_dialog_negative_button">Cancel</string>
   <string name="gettipsi_card_number_label">Card</string>

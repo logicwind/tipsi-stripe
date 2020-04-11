@@ -3,7 +3,7 @@
     <color name="colorPrimary">#F35600</color>
     <color name="colorPrimaryLight">#FF7226</color>
     <color name="colorAccent">#0086BF</color>
-
+    <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorBackground">#005980</color>
 
     <color name="spinnerItem">#AAAAAA</color>
