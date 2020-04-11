@@ -5,6 +5,13 @@
 
 React Native Stripe binding for iOS/Android platforms
 
+#### **JMM card form theme fix (2020-11-04)**
+Added dynamic theme colors for card form. 
+Added theme properties listed below:
+1) accentColor
+2) primaryForegroundColor
+3) primaryBackgroundColor
+
 ## Changelog
 
 [[7.0.0] - 2019-01-08 **Breaking changes**](/CHANGELOG.md#700---2019-01-08)
